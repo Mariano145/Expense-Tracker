@@ -1,0 +1,32 @@
+schema: spec-driven
+
+context: |
+  Tech stack: Go 1.22+ (net/http, no frameworks) + Next.js (App Router, TypeScript, Tailwind) + PostgreSQL 16
+  Architecture: Monorepo (backend/ + frontend/), clean-ish Go patterns, JWT auth (bcrypt), Zustand state
+  Testing: testify (Go), Vitest + React Testing Library (frontend)
+  Style: Conventional commits, English code/comments, Spanish user-facing
+  CI/CD: GitHub Actions → Hetzner VPS + Dokku (provisional)
+  Dev env: Docker Compose + golang-migrate
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    - Follow existing code patterns
+    tdd: false
+    test_command: "cd backend && go test ./... && cd ../frontend && npm test"
+  verify:
+    test_command: "cd backend && go test ./... && cd ../frontend && npm test"
+    build_command: "cd backend && go build ./... && cd ../frontend && npm run build"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
