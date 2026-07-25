@@ -14,14 +14,14 @@ db-down:
 migrate-up:
 	@docker compose up -d postgres
 	@docker compose exec -T postgres pg_isready -U billetera -d billetera --timeout 30 > /dev/null
-	docker run --rm --network host -v $(PWD)/backend/migrations:/migrations migrate/migrate \
+	docker run --rm --network host -v $(PWD)/backend/migrations:/migrations:Z migrate/migrate \
 		-path /migrations \
 		-database "postgres://billetera:billetera@localhost:5432/billetera?sslmode=disable" \
 		up
 
 # Rollback last migration
 migrate-down:
-	docker run --rm --network host -v $(PWD)/backend/migrations:/migrations migrate/migrate \
+	docker run --rm --network host -v $(PWD)/backend/migrations:/migrations:Z migrate/migrate \
 		-path /migrations \
 		-database "postgres://billetera:billetera@localhost:5432/billetera?sslmode=disable" \
 		down 1
