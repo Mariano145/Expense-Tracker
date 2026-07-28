@@ -40,3 +40,4 @@ docker-compose.override.yml
 
 # ===== Documentación local =====
 ARQUITECTURA.md
+FLUJO_TRABAJO.md
