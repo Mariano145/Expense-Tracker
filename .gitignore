@@ -23,6 +23,13 @@ frontend/coverage/
 backend/.env
 frontend/.env
 
+# ===== Local Documentation =====
+ARQUITECTURA.md
+FLUJO_TRABAJO.md
+STUDY_PLAN.md
+BACKUP_FEATURE1.md
+CONSULTAS.md
+
 # ===== IDE / Editor =====
 .vscode/
 .idea/
@@ -37,3 +44,6 @@ docker-compose.override.yml
 
 # ===== OS =====
 *.log
+
+# ===== Additional =====
+.opencode/agents
