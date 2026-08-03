@@ -46,4 +46,5 @@ docker-compose.override.yml
 *.log
 
 # ===== Additional =====
-.opencode/agents
+.opencode/agents/
+.engram/
