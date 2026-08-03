@@ -1,4 +1,14 @@
-.PHONY: db-up db-down migrate-up migrate-down db-test-setup
+.PHONY: help db-up db-down migrate-up migrate-down db-test-setup
+
+# Show available commands
+help:
+	@echo "Available commands:"
+	@echo "  make db-up          - Start PostgreSQL via Docker Compose"
+	@echo "  make db-down        - Stop PostgreSQL"
+	@echo "  make migrate-up     - Run all pending migrations"
+	@echo "  make migrate-down   - Rollback last migration"
+	@echo "  make db-test-setup  - Setup test database (create + migrate)"
+	@echo ""
 
 # Start PostgreSQL via Docker Compose
 db-up:
