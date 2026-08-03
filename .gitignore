@@ -37,7 +37,3 @@ docker-compose.override.yml
 
 # ===== OS =====
 *.log
-
-# ===== Documentación local =====
-ARQUITECTURA.md
-FLUJO_TRABAJO.md
