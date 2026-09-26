@@ -8,12 +8,25 @@ import (
 	"github.com/gentle-ai/billetera/backend/internal/handler"
 )
 
+// Deps holds the dependencies required to build the router.
+type Deps struct {
+	AuthHandler *handler.AuthHandler
+	AuthMW      func(http.Handler) http.Handler
+	CORSMW      func(http.Handler) http.Handler
+}
+
 // New creates and returns a configured http.Handler with all API routes.
-func New() http.Handler {
+func New(deps Deps) http.Handler {
 	mux := http.NewServeMux()
 
-	// Health check — used by Docker healthcheck and CI smoke tests.
 	mux.HandleFunc("GET /health", handler.Health)
 
-	return mux
+	mux.HandleFunc("POST /api/auth/register", deps.AuthHandler.Register)
+	mux.HandleFunc("POST /api/auth/login", deps.AuthHandler.Login)
+	mux.HandleFunc("POST /api/auth/refresh", deps.AuthHandler.Refresh)
+	mux.HandleFunc("POST /api/auth/logout", deps.AuthHandler.Logout)
+
+	mux.Handle("GET /api/auth/me", deps.AuthMW(http.HandlerFunc(deps.AuthHandler.Me)))
+
+	return deps.CORSMW(mux)
 }

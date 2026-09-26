@@ -51,9 +51,9 @@ Note: Next.js 16.2.11 differs from training-data. Implementer MUST consult insta
 
 ## Phase 5: Backend Wiring
 
-- [ ] 5.1 Update `backend/cmd/server/main.go` (config → pgxpool → DI → graceful shutdown).
-- [ ] 5.2 Update `backend/internal/router/router.go` (register `/api/auth/*`, apply middleware).
-- [ ] 5.3 Add `backend/internal/integration/auth_flow_test.go` (end-to-end).
+- [x] 5.1 Update `backend/cmd/server/main.go` (config → pgxpool → DI → graceful shutdown).
+- [x] 5.2 Update `backend/internal/router/router.go` (register `/api/auth/*`, apply middleware).
+- [x] 5.3 Add `backend/internal/integration/auth_flow_test.go` (end-to-end).
 
 ## Phase 6: Frontend Foundation
 

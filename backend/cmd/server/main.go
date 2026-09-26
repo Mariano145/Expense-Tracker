@@ -1,5 +1,6 @@
 // Package main is the entrypoint for the billetera backend server.
-// It starts an HTTP server with graceful shutdown support.
+// It wires configuration, database, repositories, services, handlers,
+// middleware, and the router, then starts an HTTP server with graceful shutdown.
 package main
 
 import (
@@ -12,26 +13,62 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gentle-ai/billetera/backend/internal/config"
+	"github.com/gentle-ai/billetera/backend/internal/database"
+	"github.com/gentle-ai/billetera/backend/internal/handler"
+	"github.com/gentle-ai/billetera/backend/internal/middleware"
+	"github.com/gentle-ai/billetera/backend/internal/repository"
 	"github.com/gentle-ai/billetera/backend/internal/router"
+	"github.com/gentle-ai/billetera/backend/internal/service"
 )
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("load config: %v", err)
 	}
 
-	addr := fmt.Sprintf(":%s", port)
+	ctx := context.Background()
+
+	pool, err := database.NewPostgresDB(ctx, database.DefaultPoolConfig(cfg.DatabaseURL))
+	if err != nil {
+		log.Fatalf("connect to database: %v", err)
+	}
+	defer pool.Close()
+
+	userRepo := repository.NewUserRepository(pool)
+	tokenRepo := repository.NewRefreshTokenRepository(pool)
+
+	authSvc := service.NewAuthService(
+		userRepo,
+		tokenRepo,
+		cfg.JWTSecret,
+		cfg.JWTAccessExpiry,
+		cfg.JWTRefreshExpiry,
+		cfg.BCryptCost,
+	)
+
+	authHandler := handler.NewAuthHandler(authSvc)
+
+	authMW := middleware.Auth(authSvc)
+	corsMW := middleware.CORS(cfg.CORSOrigin)
+
+	h := router.New(router.Deps{
+		AuthHandler: authHandler,
+		AuthMW:      authMW,
+		CORSMW:      corsMW,
+	})
+
+	addr := fmt.Sprintf(":%s", cfg.Port)
 
 	srv := &http.Server{
 		Addr:         addr,
-		Handler:      router.New(),
+		Handler:      h,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
 
-	// Channel to listen for errors from the server.
 	errCh := make(chan error, 1)
 
 	go func() {
@@ -41,7 +78,6 @@ func main() {
 		}
 	}()
 
-	// Wait for interrupt signal or server error.
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
@@ -52,13 +88,13 @@ func main() {
 		log.Printf("server error: %v", err)
 	}
 
-	// Graceful shutdown with a 10-second timeout.
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	if err := srv.Shutdown(ctx); err != nil {
+	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Printf("server forced to shutdown: %v", err)
 	}
 
+	pool.Close()
 	log.Println("server stopped")
 }
