@@ -23,4 +23,8 @@ var (
 
 	// ErrTokenNotFound is returned when a refresh token hash does not match any record.
 	ErrTokenNotFound = errors.New("token not found")
+
+	// ErrTokenReuse is returned when a previously rotated refresh token is presented again.
+	// This indicates potential token theft — the entire token family is revoked.
+	ErrTokenReuse = errors.New("token reuse detected — family revoked")
 )
