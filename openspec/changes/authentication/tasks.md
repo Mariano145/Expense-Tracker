@@ -39,15 +39,15 @@ Note: Next.js 16.2.11 differs from training-data. Implementer MUST consult insta
 
 ## Phase 3: Service Layer
 
-- [ ] 3.1 Add `internal/auth/{jwt.go, password.go, tokens.go}` (HS256, bcrypt 12, SHA-256).
-- [ ] 3.2 Implement `AuthService` (Register, Login, Refresh with family rotation + reuse detection, Logout, ValidateToken).
-- [ ] 3.3 Service unit tests with mocks covering every scenario in `specs/user-auth.md` and `specs/token-management.md`.
+- [x] 3.1 Add `internal/auth/{jwt.go, password.go, tokens.go}` (HS256, bcrypt 12, SHA-256).
+- [x] 3.2 Implement `AuthService` (Register, Login, Refresh with family rotation + reuse detection, Logout, ValidateToken).
+- [x] 3.3 Service unit tests with mocks covering every scenario in `specs/user-auth.md` and `specs/token-management.md`.
 
 ## Phase 4: HTTP Layer
 
-- [ ] 4.1 Create `internal/handler/{dto.go, auth.go}` (`AuthHandler` + 5 endpoints).
-- [ ] 4.2 Create `internal/middleware/{auth.go, cors.go}` (Bearer validate, user context, CORS).
-- [ ] 4.3 Handler and middleware tests (valid, expired, tampered, missing).
+- [x] 4.1 Create `internal/handler/{dto.go, auth.go}` (`AuthHandler` + 5 endpoints).
+- [x] 4.2 Create `internal/middleware/{auth.go, cors.go}` (Bearer validate, user context, CORS).
+- [x] 4.3 Handler and middleware tests (valid, expired, tampered, missing).
 
 ## Phase 5: Backend Wiring
 
