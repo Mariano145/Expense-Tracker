@@ -64,9 +64,9 @@ Note: Next.js 16.2.11 differs from training-data. Implementer MUST consult insta
 
 ## Phase 7: Frontend Pages
 
-- [ ] 7.1 Create `frontend/src/app/(auth)/{layout.tsx, login/page.tsx, register/page.tsx}`.
-- [ ] 7.2 Create `frontend/src/app/(dashboard)/{layout.tsx, page.tsx}` (protected).
-- [ ] 7.3 Create `frontend/src/middleware.ts` (route protection redirects).
+- [x] 7.1 Create `frontend/src/app/(auth)/{layout.tsx, login/page.tsx, register/page.tsx}`.
+- [x] 7.2 Create `frontend/src/app/(dashboard)/{layout.tsx, page.tsx}` (protected).
+- [x] 7.3 Create `frontend/src/proxy.ts` (route protection redirects — Next.js 16 renamed middleware→proxy).
 
 ## Phase 8: Frontend Tests
 
