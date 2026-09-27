@@ -57,10 +57,10 @@ Note: Next.js 16.2.11 differs from training-data. Implementer MUST consult insta
 
 ## Phase 6: Frontend Foundation
 
-- [ ] 6.1 Add `zustand` and `axios` to `frontend/package.json`.
-- [ ] 6.2 Create `frontend/src/lib/api.ts` (Axios, `withCredentials`, `baseURL`).
-- [ ] 6.3 Interceptors: request (Bearer) + response (on 401 → refresh once → retry; on fail → logout + redirect).
-- [ ] 6.4 Create `frontend/src/store/auth-store.ts` (Zustand + persist).
+- [x] 6.1 Add `zustand` and `axios` to `frontend/package.json`.
+- [x] 6.2 Create `frontend/src/lib/api.ts` (Axios, `withCredentials`, `baseURL`).
+- [x] 6.3 Interceptors: request (Bearer) + response (on 401 → refresh once → retry; on fail → logout + redirect).
+- [x] 6.4 Create `frontend/src/store/auth-store.ts` (Zustand + persist).
 
 ## Phase 7: Frontend Pages
 
