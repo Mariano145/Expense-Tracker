@@ -13,7 +13,7 @@ import (
 
 type authService interface {
 	Register(ctx context.Context, email, password string) (*model.User, error)
-	Login(ctx context.Context, email, password string) (string, string, error)
+	Login(ctx context.Context, email, password string) (*model.User, string, string, error)
 	Refresh(ctx context.Context, refreshToken string) (string, string, error)
 	Logout(ctx context.Context, refreshToken string) error
 	ValidateToken(ctx context.Context, tokenString string) (string, string, error)
@@ -60,7 +60,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessToken, refreshToken, err := h.svc.Login(r.Context(), req.Email, req.Password)
+	user, accessToken, refreshToken, err := h.svc.Login(r.Context(), req.Email, req.Password)
 	if err != nil {
 		mapServiceError(w, err)
 		return
@@ -69,7 +69,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	setRefreshCookie(w, refreshToken)
 	writeJSON(w, http.StatusOK, AuthResponse{
 		AccessToken: accessToken,
-		User:        UserDTO{Email: req.Email},
+		User:        toUserDTO(user),
 	})
 }
 

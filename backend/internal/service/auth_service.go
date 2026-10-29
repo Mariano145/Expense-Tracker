@@ -65,31 +65,32 @@ func (s *AuthService) Register(ctx context.Context, email, password string) (*mo
 	return user, nil
 }
 
-// Login verifies credentials and returns an access token + refresh token pair.
-func (s *AuthService) Login(ctx context.Context, email, password string) (string, string, error) {
+// Login verifies credentials and returns the authenticated user plus an
+// access token + refresh token pair.
+func (s *AuthService) Login(ctx context.Context, email, password string) (*model.User, string, string, error) {
 	user, err := s.users.FindByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, model.ErrUserNotFound) {
-			return "", "", model.ErrInvalidCredentials
+			return nil, "", "", model.ErrInvalidCredentials
 		}
-		return "", "", fmt.Errorf("find user: %w", err)
+		return nil, "", "", fmt.Errorf("find user: %w", err)
 	}
 
 	if err := auth.CheckPassword(password, user.PasswordHash); err != nil {
-		return "", "", model.ErrInvalidCredentials
+		return nil, "", "", model.ErrInvalidCredentials
 	}
 
 	accessToken, err := auth.GenerateAccessToken(user.ID, user.Email, s.jwtSecret, s.accessExp)
 	if err != nil {
-		return "", "", fmt.Errorf("generate access token: %w", err)
+		return nil, "", "", fmt.Errorf("generate access token: %w", err)
 	}
 
 	refreshToken, err := s.createRefreshToken(ctx, user.ID, "")
 	if err != nil {
-		return "", "", err
+		return nil, "", "", err
 	}
 
-	return accessToken, refreshToken, nil
+	return user, accessToken, refreshToken, nil
 }
 
 // Refresh validates the presented refresh token and rotates it:

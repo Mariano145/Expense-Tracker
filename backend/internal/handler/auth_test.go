@@ -18,7 +18,7 @@ import (
 
 type mockAuthService struct {
 	registerFn      func(ctx context.Context, email, password string) (*model.User, error)
-	loginFn         func(ctx context.Context, email, password string) (string, string, error)
+	loginFn         func(ctx context.Context, email, password string) (*model.User, string, string, error)
 	refreshFn       func(ctx context.Context, refreshToken string) (string, string, error)
 	logoutFn        func(ctx context.Context, refreshToken string) error
 	validateTokenFn func(ctx context.Context, tokenString string) (string, string, error)
@@ -28,7 +28,7 @@ func (m *mockAuthService) Register(ctx context.Context, email, password string) 
 	return m.registerFn(ctx, email, password)
 }
 
-func (m *mockAuthService) Login(ctx context.Context, email, password string) (string, string, error) {
+func (m *mockAuthService) Login(ctx context.Context, email, password string) (*model.User, string, string, error) {
 	return m.loginFn(ctx, email, password)
 }
 
@@ -133,8 +133,8 @@ func TestLogin(t *testing.T) {
 	t.Run("success returns 200 with token and cookie", func(t *testing.T) {
 		now := time.Now()
 		svc := &mockAuthService{
-			loginFn: func(_ context.Context, _, _ string) (string, string, error) {
-				return "access-jwt", "refresh-plain", nil
+			loginFn: func(_ context.Context, _, _ string) (*model.User, string, string, error) {
+				return &model.User{ID: "u1", Email: "test@test.com", CreatedAt: now}, "access-jwt", "refresh-plain", nil
 			},
 			registerFn: nil,
 		}
@@ -153,6 +153,8 @@ func TestLogin(t *testing.T) {
 		var resp AuthResponse
 		require.NoError(t, json.NewDecoder(rec.Body).Decode(&resp))
 		assert.Equal(t, "access-jwt", resp.AccessToken)
+		assert.Equal(t, "u1", resp.User.ID, "login response must include the real user id")
+		assert.Equal(t, "test@test.com", resp.User.Email)
 
 		cookies := rec.Result().Cookies()
 		var refreshCookie *http.Cookie
@@ -171,8 +173,8 @@ func TestLogin(t *testing.T) {
 
 	t.Run("invalid credentials returns 401", func(t *testing.T) {
 		svc := &mockAuthService{
-			loginFn: func(_ context.Context, _, _ string) (string, string, error) {
-				return "", "", model.ErrInvalidCredentials
+			loginFn: func(_ context.Context, _, _ string) (*model.User, string, string, error) {
+				return nil, "", "", model.ErrInvalidCredentials
 			},
 		}
 		h := NewAuthHandler(svc)
@@ -423,9 +425,9 @@ func TestRegisterValidation(t *testing.T) {
 
 func TestLoginValidation(t *testing.T) {
 	svc := &mockAuthService{
-		loginFn: func(_ context.Context, _, _ string) (string, string, error) {
+		loginFn: func(_ context.Context, _, _ string) (*model.User, string, string, error) {
 			t.Error("service must not be called when input is invalid")
-			return "", "", nil
+			return nil, "", "", nil
 		},
 	}
 	h := NewAuthHandler(svc)

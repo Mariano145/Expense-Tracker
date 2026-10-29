@@ -76,8 +76,11 @@ func TestAuthService_Login(t *testing.T) {
 		}
 		svc := newTestService(userRepo, tokenRepo)
 
-		access, refresh, err := svc.Login(context.Background(), "user@example.com", "correctPass")
+		user, access, refresh, err := svc.Login(context.Background(), "user@example.com", "correctPass")
 		require.NoError(t, err)
+		require.NotNil(t, user)
+		assert.Equal(t, "user@example.com", user.Email, "login must return the authenticated user")
+		assert.NotEmpty(t, user.ID)
 		assert.NotEmpty(t, access, "access token must be returned")
 		assert.NotEmpty(t, refresh, "refresh token must be returned")
 
@@ -96,7 +99,7 @@ func TestAuthService_Login(t *testing.T) {
 		}
 		svc := newTestService(userRepo, nil)
 
-		_, _, err := svc.Login(context.Background(), "ghost@example.com", "password")
+		_, _, _, err := svc.Login(context.Background(), "ghost@example.com", "password")
 		require.Error(t, err)
 		assert.True(t, errors.Is(err, model.ErrInvalidCredentials), "expected ErrInvalidCredentials, got: %v", err)
 	})
@@ -110,7 +113,7 @@ func TestAuthService_Login(t *testing.T) {
 		}
 		svc := newTestService(userRepo, nil)
 
-		_, _, err := svc.Login(context.Background(), "user@example.com", "wrongPass")
+		_, _, _, err := svc.Login(context.Background(), "user@example.com", "wrongPass")
 		require.Error(t, err)
 		assert.True(t, errors.Is(err, model.ErrInvalidCredentials), "expected ErrInvalidCredentials, got: %v", err)
 	})
