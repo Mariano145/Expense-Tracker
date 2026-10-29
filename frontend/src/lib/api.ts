@@ -25,7 +25,17 @@ apiClient.interceptors.response.use(
       _retry?: boolean;
     };
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Never retry the refresh/logout endpoints themselves: their 401s are
+    // handled by the store, and re-entering here would recurse infinitely.
+    const isSessionEndpoint =
+      !!originalRequest.url?.endsWith("/api/auth/refresh") ||
+      !!originalRequest.url?.endsWith("/api/auth/logout");
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isSessionEndpoint
+    ) {
       originalRequest._retry = true;
 
       const { refreshToken, logout } = useAuthStore.getState();

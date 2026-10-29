@@ -30,7 +30,7 @@ interface RefreshResponse {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       accessToken: null,
       isAuthenticated: false,
@@ -62,16 +62,12 @@ export const useAuthStore = create<AuthState>()(
 
       register: async (email: string, password: string) => {
         set({ isLoading: true });
+        // Backend contract: register returns 201 with the created user (UserDTO),
+        // NOT a token pair — the session is established by an immediate login.
         try {
-          const response = await apiClient.post<AuthResponse>(
-            "/api/auth/register",
-            { email, password },
-          );
-          set({
-            user: response.data.user,
-            accessToken: response.data.access_token,
-            isAuthenticated: true,
-            isLoading: false,
+          await apiClient.post<User>("/api/auth/register", {
+            email,
+            password,
           });
         } catch (error) {
           set({
@@ -82,6 +78,8 @@ export const useAuthStore = create<AuthState>()(
           });
           throw error;
         }
+        // If this fails, login() already cleared state and re-throws.
+        await get().login(email, password);
       },
 
       logout: async () => {

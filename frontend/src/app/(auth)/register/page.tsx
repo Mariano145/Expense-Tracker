@@ -28,8 +28,9 @@ export default function RegisterPage() {
     }
 
     try {
+      // store.register auto-logs-in, so we land directly in the app.
       await register(email, password);
-      router.push("/login");
+      router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
     }

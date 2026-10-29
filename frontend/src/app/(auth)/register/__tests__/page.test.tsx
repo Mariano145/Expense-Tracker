@@ -64,7 +64,7 @@ describe("RegisterPage", () => {
     });
   });
 
-  it("redirects to /login on successful registration", async () => {
+  it("redirects to /dashboard on successful registration (auto-login)", async () => {
     const user = userEvent.setup();
     mockRegister.mockResolvedValueOnce(undefined);
     render(<RegisterPage />);
@@ -75,7 +75,7 @@ describe("RegisterPage", () => {
     await user.click(screen.getByRole("button", { name: /sign up/i }));
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/login");
+      expect(mockPush).toHaveBeenCalledWith("/dashboard");
     });
   });
 

@@ -102,7 +102,12 @@ describe("auth-store", () => {
   });
 
   describe("register", () => {
-    it("sets user, token, and isAuthenticated on success", async () => {
+    it("posts register with the real UserDTO shape, then auto-logs-in with real tokens", async () => {
+      // Backend contract (spec user-auth.md): register returns 201 {id, email, created_at}
+      vi.mocked(api.apiClient.post).mockResolvedValueOnce({
+        data: mockUser, // UserDTO directly — NO access_token in this response
+      });
+      // auto-login response
       vi.mocked(api.apiClient.post).mockResolvedValueOnce({
         data: {
           access_token: mockAccessToken,
@@ -115,16 +120,21 @@ describe("auth-store", () => {
         .register("test@example.com", "password123");
 
       const state = useAuthStore.getState();
-      expect(state.user).toEqual(mockUser);
-      expect(state.accessToken).toBe(mockAccessToken);
-      expect(state.isAuthenticated).toBe(true);
-      expect(api.apiClient.post).toHaveBeenCalledWith("/api/auth/register", {
+      expect(api.apiClient.post).toHaveBeenNthCalledWith(1, "/api/auth/register", {
         email: "test@example.com",
         password: "password123",
       });
+      expect(api.apiClient.post).toHaveBeenNthCalledWith(2, "/api/auth/login", {
+        email: "test@example.com",
+        password: "password123",
+      });
+      expect(state.user).toEqual(mockUser);
+      expect(state.accessToken).toBe(mockAccessToken);
+      expect(state.isAuthenticated).toBe(true);
+      expect(state.isLoading).toBe(false);
     });
 
-    it("resets state on register failure", async () => {
+    it("does not attempt login and clears state when register fails", async () => {
       vi.mocked(api.apiClient.post).mockRejectedValueOnce(
         new Error("Email already registered"),
       );
@@ -133,10 +143,24 @@ describe("auth-store", () => {
         useAuthStore.getState().register("test@example.com", "password123"),
       ).rejects.toThrow("Email already registered");
 
+      expect(api.apiClient.post).toHaveBeenCalledTimes(1);
       const state = useAuthStore.getState();
       expect(state.user).toBeNull();
       expect(state.isAuthenticated).toBe(false);
       expect(state.isLoading).toBe(false);
+    });
+
+    it("leaves user unauthenticated if auto-login fails after registration", async () => {
+      vi.mocked(api.apiClient.post).mockResolvedValueOnce({ data: mockUser });
+      vi.mocked(api.apiClient.post).mockRejectedValueOnce(new Error("login hiccup"));
+
+      await expect(
+        useAuthStore.getState().register("test@example.com", "password123"),
+      ).rejects.toThrow("login hiccup");
+
+      const state = useAuthStore.getState();
+      expect(state.isAuthenticated).toBe(false);
+      expect(state.accessToken).toBeNull();
     });
   });
 

@@ -262,6 +262,42 @@ describe("api client", () => {
       expect(logoutMock).toHaveBeenCalledOnce();
     });
 
+    it("does not attempt refresh when the 401 comes from /refresh or /logout themselves (prevents recursion loop)", async () => {
+      const refreshMock = vi.fn();
+      const logoutMock = vi.fn();
+      vi.mocked(useAuthStore.getState).mockReturnValue({
+        accessToken: null,
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        login: vi.fn(),
+        register: vi.fn(),
+        logout: logoutMock,
+        refreshToken: refreshMock,
+      });
+
+      await import("@/lib/api");
+
+      for (const url of ["/api/auth/refresh", "/api/auth/logout"]) {
+        const error = {
+          response: { status: 401 } as AxiosResponse,
+          config: {
+            url,
+            headers: createHeadersMock(),
+          } as unknown as InternalAxiosRequestConfig,
+          isAxiosError: true,
+          message: "Request failed with status code 401",
+          name: "AxiosError",
+          toJSON: () => ({}),
+        } as AxiosError;
+
+        await expect(responseErrorInterceptor(error)).rejects.toBe(error);
+      }
+
+      expect(refreshMock).not.toHaveBeenCalled();
+      expect(logoutMock).not.toHaveBeenCalled();
+    });
+
     it("passes through non-401 errors without refresh", async () => {
       const refreshMock = vi.fn();
       vi.mocked(useAuthStore.getState).mockReturnValue({
