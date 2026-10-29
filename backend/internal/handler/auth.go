@@ -34,6 +34,11 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if msg := validateRegistration(req.Email, req.Password); msg != "" {
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", msg)
+		return
+	}
+
 	user, err := h.svc.Register(r.Context(), req.Email, req.Password)
 	if err != nil {
 		mapServiceError(w, err)
@@ -47,6 +52,11 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, http.StatusBadRequest, "BAD_REQUEST", "invalid request body")
+		return
+	}
+
+	if msg := validateLogin(req.Email, req.Password); msg != "" {
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", msg)
 		return
 	}
 

@@ -76,7 +76,7 @@ Note: Next.js 16.2.11 differs from training-data. Implementer MUST consult insta
 
 ## Phase 10: Spec Gap — Input Validation (added post-review)
 
-- [ ] 10.1 Backend validation: malformed email and password <8 chars → HTTP 400 (register + login), with handler tests (TDD).
+- [x] 10.1 Backend validation: malformed email and password <8 chars → HTTP 400 (register + login), with handler tests (TDD).
 
 ## Phase 9: Documentation
 

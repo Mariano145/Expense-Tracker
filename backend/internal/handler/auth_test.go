@@ -373,3 +373,103 @@ func TestMe(t *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, rec.Code)
 	})
 }
+
+func TestRegisterValidation(t *testing.T) {
+	// Spec: malformed email and password <8 chars must return 400
+	// and the service must NOT be called (fail fast before hashing).
+	newHandler := func(t *testing.T) *AuthHandler {
+		t.Helper()
+		svc := &mockAuthService{
+			registerFn: func(_ context.Context, _, _ string) (*model.User, error) {
+				t.Error("service must not be called when input is invalid")
+				return nil, nil
+			},
+		}
+		return NewAuthHandler(svc)
+	}
+
+	cases := []struct {
+		name        string
+		email       string
+		password    string
+		wantMessage string
+	}{
+		{"email without @", "not-an-email", "secure123", "invalid email format"},
+		{"email missing domain", "user@", "secure123", "invalid email format"},
+		{"email missing local part", "@domain.com", "secure123", "invalid email format"},
+		{"email missing TLD", "user@domain", "secure123", "invalid email format"},
+		{"email with spaces", "user name@domain.com", "secure123", "invalid email format"},
+		{"empty email", "", "secure123", "invalid email format"},
+		{"empty password", "user@domain.com", "", "password must be at least 8 characters"},
+		{"password too short", "user@domain.com", "abc12", "password must be at least 8 characters"},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			h := newHandler(t)
+			body, _ := json.Marshal(RegisterRequest{Email: tc.email, Password: tc.password})
+			req := httptest.NewRequest(http.MethodPost, "/api/auth/register", bytes.NewReader(body))
+			rec := httptest.NewRecorder()
+
+			h.Register(rec, req)
+
+			assert.Equal(t, http.StatusBadRequest, rec.Code)
+			errResp := decodeError(t, rec.Body)
+			assert.Equal(t, "BAD_REQUEST", errResp.Error.Code)
+			assert.Contains(t, errResp.Error.Message, tc.wantMessage)
+		})
+	}
+}
+
+func TestLoginValidation(t *testing.T) {
+	svc := &mockAuthService{
+		loginFn: func(_ context.Context, _, _ string) (string, string, error) {
+			t.Error("service must not be called when input is invalid")
+			return "", "", nil
+		},
+	}
+	h := NewAuthHandler(svc)
+
+	t.Run("malformed email returns 400", func(t *testing.T) {
+		body, _ := json.Marshal(LoginRequest{Email: "not-an-email", Password: "secure123"})
+		req := httptest.NewRequest(http.MethodPost, "/api/auth/login", bytes.NewReader(body))
+		rec := httptest.NewRecorder()
+
+		h.Login(rec, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		errResp := decodeError(t, rec.Body)
+		assert.Equal(t, "BAD_REQUEST", errResp.Error.Code)
+		assert.Contains(t, errResp.Error.Message, "invalid email format")
+	})
+
+	t.Run("empty password returns 400", func(t *testing.T) {
+		body, _ := json.Marshal(LoginRequest{Email: "user@domain.com", Password: ""})
+		req := httptest.NewRequest(http.MethodPost, "/api/auth/login", bytes.NewReader(body))
+		rec := httptest.NewRecorder()
+
+		h.Login(rec, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+	})
+}
+
+func TestRegisterValidInputPassesValidation(t *testing.T) {
+	called := false
+	svc := &mockAuthService{
+		registerFn: func(_ context.Context, _, _ string) (*model.User, error) {
+			called = true
+			return &model.User{ID: "u1", Email: "user@domain.com", CreatedAt: time.Now()}, nil
+		},
+	}
+	h := NewAuthHandler(svc)
+
+	body, _ := json.Marshal(RegisterRequest{Email: "user@domain.com", Password: "secure123"})
+	req := httptest.NewRequest(http.MethodPost, "/api/auth/register", bytes.NewReader(body))
+	rec := httptest.NewRecorder()
+
+	h.Register(rec, req)
+
+	assert.True(t, called, "valid input must reach the service")
+	assert.Equal(t, http.StatusCreated, rec.Code)
+}
