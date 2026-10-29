@@ -1,4 +1,4 @@
-// Package main is the entrypoint for the billetera backend server.
+// Package main is the entrypoint for the spendly backend server.
 // It wires configuration, database, repositories, services, handlers,
 // middleware, and the router, then starts an HTTP server with graceful shutdown.
 package main
@@ -13,13 +13,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gentle-ai/billetera/backend/internal/config"
-	"github.com/gentle-ai/billetera/backend/internal/database"
-	"github.com/gentle-ai/billetera/backend/internal/handler"
-	"github.com/gentle-ai/billetera/backend/internal/middleware"
-	"github.com/gentle-ai/billetera/backend/internal/repository"
-	"github.com/gentle-ai/billetera/backend/internal/router"
-	"github.com/gentle-ai/billetera/backend/internal/service"
+	"github.com/Mariano145/spendly/backend/internal/config"
+	"github.com/Mariano145/spendly/backend/internal/database"
+	"github.com/Mariano145/spendly/backend/internal/handler"
+	"github.com/Mariano145/spendly/backend/internal/middleware"
+	"github.com/Mariano145/spendly/backend/internal/repository"
+	"github.com/Mariano145/spendly/backend/internal/router"
+	"github.com/Mariano145/spendly/backend/internal/service"
 )
 
 func main() {

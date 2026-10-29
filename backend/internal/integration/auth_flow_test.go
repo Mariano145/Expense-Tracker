@@ -10,12 +10,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gentle-ai/billetera/backend/internal/database"
-	"github.com/gentle-ai/billetera/backend/internal/handler"
-	"github.com/gentle-ai/billetera/backend/internal/middleware"
-	"github.com/gentle-ai/billetera/backend/internal/repository"
-	"github.com/gentle-ai/billetera/backend/internal/router"
-	"github.com/gentle-ai/billetera/backend/internal/service"
+	"github.com/Mariano145/spendly/backend/internal/database"
+	"github.com/Mariano145/spendly/backend/internal/handler"
+	"github.com/Mariano145/spendly/backend/internal/middleware"
+	"github.com/Mariano145/spendly/backend/internal/repository"
+	"github.com/Mariano145/spendly/backend/internal/router"
+	"github.com/Mariano145/spendly/backend/internal/service"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -31,7 +31,7 @@ func setupTestEnv(t *testing.T) *testEnv {
 
 	dbURL := os.Getenv("TEST_DATABASE_URL")
 	if dbURL == "" {
-		dbURL = "postgres://billetera:billetera@localhost:5432/billetera_test?sslmode=disable"
+		dbURL = "postgres://spendly:spendly@localhost:5432/spendly_test?sslmode=disable"
 	}
 
 	ctx := context.Background()

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/gentle-ai/billetera/backend/internal/model"
+	"github.com/Mariano145/spendly/backend/internal/model"
 )
 
 // mockUserRepo is a test double for repository.UserRepository.

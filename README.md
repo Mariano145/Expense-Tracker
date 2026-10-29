@@ -1,4 +1,4 @@
-# Billetera
+# Spendly
 
 Expense tracking web app — multi-user, cross-device sync, visual dashboards.
 
@@ -26,7 +26,7 @@ Expense tracking web app — multi-user, cross-device sync, visual dashboards.
 ### 1. Clone and install
 
 ```bash
-git clone <repo-url> && cd billetera
+git clone <repo-url> && cd spendly
 
 # Backend dependencies (none beyond stdlib + testify)
 cd backend && go mod download && cd ..
@@ -42,7 +42,7 @@ cd frontend && npm install && cd ..
 make db-up
 
 # Verify it's ready
-docker compose exec postgres pg_isready -U billetera
+docker compose exec postgres pg_isready -U spendly
 ```
 
 ### 3. Run migrations
@@ -76,7 +76,7 @@ App runs on `http://localhost:3000`.
 ```bash
 # Backend (unit + repository + integration tests)
 cd backend
-go test -p 1 ./...        # -p 1: packages share the billetera_test DB; run sequentially
+go test -p 1 ./...        # -p 1: packages share the spendly_test DB; run sequentially
 
 # Frontend
 cd frontend && npm test
@@ -85,7 +85,7 @@ cd frontend && npm test
 Backend DB-backed tests need the test database up once:
 
 ```bash
-make db-up && make db-test-setup   # creates billetera_test + applies migrations
+make db-up && make db-test-setup   # creates spendly_test + applies migrations
 ```
 
 ## Makefile Commands
@@ -96,12 +96,12 @@ make db-up && make db-test-setup   # creates billetera_test + applies migrations
 | `make db-down`      | Stop PostgreSQL                            |
 | `make migrate-up`   | Apply all pending migrations               |
 | `make migrate-down` | Rollback last migration                    |
-| `make db-test-setup`| Create + migrate `billetera_test` DB       |
+| `make db-test-setup`| Create + migrate `spendly_test` DB       |
 
 ## Project Layout
 
 ```
-billetera/
+spendly/
 ├── backend/                 # Go API server
 │   ├── cmd/server/          # Entrypoint (main.go, DI wiring, graceful shutdown)
 │   ├── internal/

@@ -1,4 +1,4 @@
-# Billetera Backend
+# Spendly Backend
 
 Go HTTP API using the standard library (`net/http`). No frameworks.
 

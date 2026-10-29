@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gentle-ai/billetera/backend/internal/model"
+	"github.com/Mariano145/spendly/backend/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -21,7 +21,7 @@ func testPool(t *testing.T) *pgxpool.Pool {
 
 	dbURL := os.Getenv("TEST_DATABASE_URL")
 	if dbURL == "" {
-		dbURL = "postgres://billetera:billetera@localhost:5432/billetera_test?sslmode=disable"
+		dbURL = "postgres://spendly:spendly@localhost:5432/spendly_test?sslmode=disable"
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

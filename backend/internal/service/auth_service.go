@@ -10,9 +10,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gentle-ai/billetera/backend/internal/auth"
-	"github.com/gentle-ai/billetera/backend/internal/model"
-	"github.com/gentle-ai/billetera/backend/internal/repository"
+	"github.com/Mariano145/spendly/backend/internal/auth"
+	"github.com/Mariano145/spendly/backend/internal/model"
+	"github.com/Mariano145/spendly/backend/internal/repository"
 	"github.com/google/uuid"
 )
 

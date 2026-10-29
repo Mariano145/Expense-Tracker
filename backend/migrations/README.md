@@ -11,7 +11,7 @@ SQL migrations managed with [golang-migrate](https://github.com/golang-migrate/m
 make migrate-up
 
 # Using migrate CLI directly
-migrate -path backend/migrations -database "postgres://billetera:billetera@localhost:5432/billetera?sslmode=disable" up
+migrate -path backend/migrations -database "postgres://spendly:spendly@localhost:5432/spendly?sslmode=disable" up
 ```
 
 ### Rollback last migration
@@ -20,7 +20,7 @@ migrate -path backend/migrations -database "postgres://billetera:billetera@local
 make migrate-down
 
 # Or directly
-migrate -path backend/migrations -database "postgres://billetera:billetera@localhost:5432/billetera?sslmode=disable" down 1
+migrate -path backend/migrations -database "postgres://spendly:spendly@localhost:5432/spendly?sslmode=disable" down 1
 ```
 
 ### Create a new migration

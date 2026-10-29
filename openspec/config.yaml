@@ -23,9 +23,9 @@ rules:
   apply:
     - Follow existing code patterns
     tdd: false
-    test_command: "cd backend && go test ./... && cd ../frontend && npm test"
+    test_command: "cd backend && go test -p 1 ./... && cd ../frontend && npm test"
   verify:
-    test_command: "cd backend && go test ./... && cd ../frontend && npm test"
+    test_command: "cd backend && go test -p 1 ./... && cd ../frontend && npm test"
     build_command: "cd backend && go build ./... && cd ../frontend && npm run build"
     coverage_threshold: 0
   archive:

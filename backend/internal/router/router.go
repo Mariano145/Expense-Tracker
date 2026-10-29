@@ -1,11 +1,11 @@
-// Package router sets up HTTP routing for the billetera API.
+// Package router sets up HTTP routing for the spendly API.
 // It uses the standard library's http.ServeMux with Go 1.22+ method patterns.
 package router
 
 import (
 	"net/http"
 
-	"github.com/gentle-ai/billetera/backend/internal/handler"
+	"github.com/Mariano145/spendly/backend/internal/handler"
 )
 
 // Deps holds the dependencies required to build the router.

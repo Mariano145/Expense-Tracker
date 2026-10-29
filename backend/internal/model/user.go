@@ -1,4 +1,4 @@
-// Package model defines the domain types for the billetera application.
+// Package model defines the domain types for the spendly application.
 // These structs represent the core entities and are used across all layers
 // (repository, service, handler).
 package model

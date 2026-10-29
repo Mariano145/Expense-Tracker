@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gentle-ai/billetera/backend/internal/middleware"
-	"github.com/gentle-ai/billetera/backend/internal/model"
+	"github.com/Mariano145/spendly/backend/internal/middleware"
+	"github.com/Mariano145/spendly/backend/internal/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

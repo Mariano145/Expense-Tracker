@@ -287,7 +287,7 @@ CREATE INDEX idx_refresh_tokens_family_id ON refresh_tokens(family_id);
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `8080` | HTTP server port |
-| `DATABASE_URL` | `postgres://billetera:billetera@localhost:5432/billetera?sslmode=disable` | PostgreSQL connection string |
+| `DATABASE_URL` | `postgres://spendly:spendly@localhost:5432/spendly?sslmode=disable` | PostgreSQL connection string |
 | `JWT_SECRET` | (required, no default) | HMAC signing key, minimum 32 chars |
 | `JWT_ACCESS_EXPIRY` | `15m` | Access token TTL |
 | `JWT_REFRESH_EXPIRY` | `168h` | Refresh token TTL (7 days) |

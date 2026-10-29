@@ -1,6 +1,6 @@
-# Billetera Frontend
+# Spendly Frontend
 
-Next.js frontend for the Billetera expense tracking app.
+Next.js frontend for the Spendly expense tracking app.
 
 ## Tech Stack
 
@@ -89,10 +89,10 @@ The Dockerfile uses multi-stage build for optimal image size (~150-200MB):
 
 ```bash
 # Build image
-docker build -t billetera-frontend .
+docker build -t spendly-frontend .
 
 # Run container
-docker run -p 3000:3000 billetera-frontend
+docker run -p 3000:3000 spendly-frontend
 ```
 
 ## Learn More

@@ -1,4 +1,4 @@
-module github.com/gentle-ai/billetera/backend
+module github.com/Mariano145/spendly/backend
 
 go 1.26.4
 
