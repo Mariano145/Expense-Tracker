@@ -23,13 +23,6 @@ frontend/coverage/
 backend/.env
 frontend/.env
 
-# ===== Local Documentation =====
-ARQUITECTURA.md
-FLUJO_TRABAJO.md
-STUDY_PLAN.md
-BACKUP_FEATURE1.md
-CONSULTAS.md
-
 # ===== IDE / Editor =====
 .vscode/
 .idea/
