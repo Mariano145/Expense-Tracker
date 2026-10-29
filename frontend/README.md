@@ -4,11 +4,12 @@ Next.js frontend for the Spendly expense tracking app.
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **Testing**: Vitest + React Testing Library
-- **State Management**: Zustand (to be added)
+- **State Management**: Zustand (with persist)
+- **HTTP**: Axios (with auto-refresh interceptors)
 
 ## Getting Started
 
@@ -50,13 +51,15 @@ npm run dev
 
 ```
 src/
-├── app/              # Next.js App Router pages
-│   ├── layout.tsx    # Root layout (HTML, fonts, global providers)
-│   ├── page.tsx      # Home page (/)
-│   └── globals.css   # Global styles (Tailwind)
-└── components/       # Reusable React components
-    ├── Hello.tsx     # Example component
-    └── Hello.test.tsx
+├── app/
+│   ├── layout.tsx          # Root layout (HTML, fonts, global providers)
+│   ├── page.tsx            # Root (/) — redirects by session
+│   ├── (auth)/             # Public group: login, register
+│   └── (dashboard)/        # Protected group
+├── components/             # Reusable React components (+ colocated tests)
+├── lib/api.ts              # Axios client + interceptors (Bearer, auto-refresh)
+├── store/auth-store.ts     # Zustand + persist session store
+└── proxy.ts                # Route protection (Next.js 16 middleware)
 ```
 
 ## Testing
