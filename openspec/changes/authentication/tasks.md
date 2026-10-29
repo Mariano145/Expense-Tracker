@@ -80,6 +80,6 @@ Note: Next.js 16.2.11 differs from training-data. Implementer MUST consult insta
 
 ## Phase 9: Documentation
 
-- [ ] 9.1 Update `README.md` (setup, env vars, migration, test user).
-- [ ] 9.2 Update `ARQUITECTURA.md` (auth components, 3-layer diagram).
-- [ ] 9.3 Add `docs/api/auth.md` (endpoint reference, examples, error codes).
+- [x] 9.1 Update `README.md` (setup, env vars, migration, test user).
+- [x] 9.2 Update `ARQUITECTURA.md` (auth components, 3-layer diagram).
+- [x] 9.3 Add `docs/api/auth.md` (endpoint reference, examples, error codes).
