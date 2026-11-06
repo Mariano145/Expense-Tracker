@@ -31,7 +31,7 @@ autonomously. Use the slash commands to jump straight into a phase.
 | Backlog | one-line user stories, `Requires: #N` links | GitHub issues (milestone = feature) |
 | Story | acceptance criteria, mini plan, out-of-scope | the issue's top comment |
 | Pair | test list, then commits per test | `feature/<branch>` commits |
-| Close | demo proof, PR, doc update | PR + `docs/features/<area>.md` |
+| Close | demo proof, PR, state update | PR + `odd/tasks/state.md` |
 
 ## Rules that don't bend
 
