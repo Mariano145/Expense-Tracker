@@ -1,4 +1,4 @@
-// Package handler provides HTTP handlers for the billetera API.
+// Package handler provides HTTP handlers for the spendly API.
 package handler
 
 import (

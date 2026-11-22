@@ -4,6 +4,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -37,8 +38,16 @@ type Config struct {
 }
 
 // Load reads environment variables and returns a validated Config.
+// It first loads optional KEY=VALUE pairs from a .env file in the current
+// working directory (development convenience; real env vars always win).
 // It returns an error if required variables are missing or values are invalid.
 func Load() (*Config, error) {
+	// .env is optional: missing file is fine, a malformed-but-present file
+	// only logs — never fail the whole startup over it.
+	if err := loadEnvFileIntoEnv(".env"); err != nil && !errors.Is(err, errNoEnvFile) {
+		return nil, fmt.Errorf("load .env: %w", err)
+	}
+
 	cfg := &Config{
 		Port:        getEnvOrDefault("PORT", "8080"),
 		DatabaseURL: os.Getenv("DATABASE_URL"),

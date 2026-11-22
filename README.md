@@ -1,134 +1,61 @@
-# Billetera
+# Spendly
 
-Expense tracking web app — multi-user, cross-device sync, visual dashboards.
+**Personal expense tracking, done privately.** Spendly is a multi-user app
+to record your income and expenses, organize them by category, and see where
+your money actually goes — synced across your devices, with your data living
+on your own server.
 
-## Tech Stack
+## What it does
 
-| Layer    | Technology                          |
-|----------|-------------------------------------|
-| Backend  | Go 1.22+ (`net/http`, no framework) |
-| Frontend | Next.js 16 (App Router, TypeScript) |
-| Database | PostgreSQL 16                       |
-| Auth     | JWT + bcrypt                        |
-| State    | Zustand                             |
-| Testing  | testify (Go), Vitest + RTL (JS)     |
-| CI/CD    | GitHub Actions                      |
-| Deploy   | Hetzner VPS + Dokku (provisional)   |
+| Area | Status |
+|------|--------|
+| Accounts — register, login, sessions that survive restarts, theft-proof token rotation | ✅ Ready |
+| Expenses & categories — record income/spending, organize by category | 🚧 Next |
+| Dashboards — monthly summaries, charts, filters | 🔜 Planned |
+| Android app | 🔜 Planned |
+| Hosted web app | 🔜 Planned |
 
-## Prerequisites
+Currently Spendly runs as a **self-hosted web app** (API + web + database).
+Public Android/web releases will land here once they exist; in the meantime,
+to run your own instance see **[docs/setup.md](docs/setup.md)**.
 
-- [Go 1.22+](https://go.dev/dl/)
-- [Node.js 20+](https://nodejs.org/)
-- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
+## Tech stack
 
-## Quick Start
+| Layer     | Technology                             |
+|-----------|----------------------------------------|
+| Backend   | Go (net/http, no framework)            |
+| Frontend  | Next.js 16 (App Router, TypeScript)    |
+| Database  | PostgreSQL 16                          |
+| Auth      | JWT + bcrypt, rotating refresh tokens  |
+| State     | Zustand                                |
+| Testing   | testify (Go), Vitest + RTL (JS)        |
+| CI/CD     | GitHub Actions                         |
 
-### 1. Clone and install
+## Documentation
 
-```bash
-git clone <repo-url> && cd billetera
+Everything precise lives in [`docs/`](docs/):
 
-# Backend dependencies (none beyond stdlib + testify)
-cd backend && go mod download && cd ..
+- **[docs/setup.md](docs/setup.md)** — install, run, test, env vars, Makefile
+- **[docs/architecture.md](docs/architecture.md)** — layers, patterns, security model, conventions
+- **[docs/api/auth.md](docs/api/auth.md)** — every endpoint with request/response examples and error codes
+- **[openspec/](openspec/)** — specs and design docs per feature (SDD artifacts, including the full authentication spec)
 
-# Frontend dependencies
-cd frontend && npm install && cd ..
-```
-
-### 2. Start the database
-
-```bash
-# Start PostgreSQL via Docker Compose
-make db-up
-
-# Verify it's ready
-docker compose exec postgres pg_isready -U billetera
-```
-
-### 3. Run migrations
-
-```bash
-make migrate-up
-```
-
-### 4. Start the backend
-
-```bash
-cd backend
-cp .env.example .env   # first time only
-go run ./cmd/server
-```
-
-Server runs on `http://localhost:8080`. Health check: `curl localhost:8080/health`
-
-### 5. Start the frontend
-
-```bash
-cd frontend
-cp .env.example .env.local   # first time only
-npm run dev
-```
-
-App runs on `http://localhost:3000`.
-
-## Testing
-
-```bash
-# Backend
-cd backend && go test ./...
-
-# Frontend
-cd frontend && npm test
-```
-
-## Project Layout
+## Project layout
 
 ```
-billetera/
-├── backend/                 # Go API server
-│   ├── cmd/server/          # Entrypoint (main.go)
-│   ├── internal/
-│   │   ├── handler/         # HTTP handlers
-│   │   └── router/          # Route registration
-│   ├── migrations/          # SQL migrations (golang-migrate)
-│   └── .env.example
-├── frontend/                # Next.js app
-│   ├── src/
-│   │   ├── app/             # App Router pages & layouts
-│   │   └── components/      # Reusable React components
-│   ├── vitest.config.ts
-│   └── .env.example
-├── .github/workflows/       # CI pipeline
-├── docker-compose.yml       # PostgreSQL for local dev
-├── Makefile                 # db-up, db-down, migrate-up, migrate-down
-└── openspec/                # SDD artifacts (specs, design, tasks)
+spendly/
+├── backend/       # Go API
+├── frontend/      # Next.js app
+├── docs/          # setup, architecture, API reference
+├── openspec/      # feature specs & designs
+└── .github/       # CI
 ```
 
-## Environment Variables
+## Contributing
 
-### Backend (`backend/.env`)
-
-| Variable       | Default | Description                  |
-|----------------|---------|------------------------------|
-| `PORT`         | `8080`  | Server port                  |
-| `DATABASE_URL` | —       | PostgreSQL connection string |
-| `JWT_SECRET`   | —       | Secret key for JWT signing   |
-| `CORS_ORIGIN`  | —       | Allowed CORS origin          |
-
-### Frontend (`frontend/.env.local`)
-
-| Variable              | Default | Description            |
-|-----------------------|---------|------------------------|
-| `NEXT_PUBLIC_API_URL` | —       | Backend API base URL   |
-
-## Makefile Commands
-
-| Command        | Description                         |
-|----------------|-------------------------------------|
-| `make db-up`   | Start PostgreSQL                    |
-| `make db-down` | Stop PostgreSQL                     |
-| `make migrate-up`   | Apply all pending migrations  |
-| `make migrate-down` | Rollback last migration        |
+Clone a feature branch off `develop`, follow Conventional Commits, keep tests
+green (`go test -p 1 ./...`, `npm test`). Details in
+[docs/architecture.md](docs/architecture.md#conventions).
 
 ## License
 

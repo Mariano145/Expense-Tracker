@@ -9,7 +9,7 @@ describe("Hello", () => {
   });
 
   it("renders custom name", () => {
-    render(<Hello name="Billetera" />);
-    expect(screen.getByText("Hello, Billetera!")).toBeInTheDocument();
+    render(<Hello name="Spendly" />);
+    expect(screen.getByText("Hello, Spendly!")).toBeInTheDocument();
   });
 });
