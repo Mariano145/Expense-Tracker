@@ -1,7 +1,7 @@
 # expenses: registrar y revisar gastos propios
 
 **Intent (verbatim, the user's words):** "quiero avanzar con mas en el desarrollo de la app" · "mergea a develop entonces y vamos a crear la rama expenses" · "Sembrar defaults en expenses"
-**Branch:** `feature/expenses` (base: `develop` @ `c9967e3`)   **Issues:** S1 a crear · milestone `expenses` (abierto, 0 issues)   **Status:** in-progress
+**Branch:** `feature/expenses` (base: `develop` @ `c9967e3`)   **Issues:** #11 (S1) · milestone `expenses` (abierto)   **Status:** in-progress — S1 abierta, loop TDD **sin iniciar** a pedido del PO
 
 ## Problem & scope
 
@@ -34,7 +34,7 @@ multi-moneda, importación desde planilla, edición en lote.
 
 | ID | Story (issue #) | Criterio | Status | Evidence |
 |----|-----------------|----------|--------|----------|
-| S1 | Cada usuario nuevo recibe sus 7 categorías por defecto | pendiente issue | [ ] | — |
+| S1 | #11 Cada usuario nuevo recibe sus 7 categorías por defecto | ver issue #11 AC-A/AC-B/AC-C/AC-D | [x] refinada, ⬜ sin implementar | — |
 | S2 | Registrar un gasto eligiendo categoría | requiere S1 | [ ] | — |
 | S3 | Ver mis gastos del mes | requiere S2 | [ ] | — |
 | S4 | Cambiar de mes desde la lista | requiere S3 | [ ] | — |
@@ -68,7 +68,9 @@ Las ACs literales viven en cada issue; esta tabla no las duplica.
 
 ## Next step
 
-Refinar S1 (`/story`): Given/When/Then + plan + out-of-scope, abrir el issue en
-el milestone `expenses`, y arrancar el RED del primer test del repositorio de
-categorías. Nada de expenses se toca sin que auth's #10 (token storage) quede
-decidido, porque S1 toca `Register` en el service.
+**Esperar el GO del PO para arrancar el loop TDD de #11.** El primer ciclo es
+RED sobre `CategoryRepository`: seed crea las 7 categorías del usuario, con
+`go test -p 1 ./internal/repository/... -run TestCategory`.
+
+Antes de tocar `Register` conviene decidir #10 (access token en localStorage):
+S1 pisa el mismo archivo del flujo de registro.
