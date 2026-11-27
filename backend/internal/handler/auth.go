@@ -99,7 +99,13 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.svc.Logout(r.Context(), cookie.Value); err != nil {
 		if errors.Is(err, model.ErrTokenNotFound) {
-			writeError(w, http.StatusUnauthorized, "UNAUTHORIZED", "token not found")
+			// Idempotent logout (issue #12, AC-F): the token is already gone from
+			// the DB — revoked, rotated out, or expired — which is exactly the
+			// state the client asked for. Clear the cookie and report success
+			// instead of returning 401 without a Set-Cookie, which left a session
+			// the route guard still considered valid.
+			clearRefreshCookie(w)
+			w.WriteHeader(http.StatusNoContent)
 			return
 		}
 		writeError(w, http.StatusInternalServerError, "INTERNAL_ERROR", "could not logout")
@@ -125,7 +131,7 @@ func setRefreshCookie(w http.ResponseWriter, value string) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "refresh_token",
 		Value:    value,
-		Path:     "/api/auth",
+		Path:     "/",
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
@@ -137,7 +143,7 @@ func clearRefreshCookie(w http.ResponseWriter) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "refresh_token",
 		Value:    "",
-		Path:     "/api/auth",
+		Path:     "/",
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,

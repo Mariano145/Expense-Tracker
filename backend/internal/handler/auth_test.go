@@ -167,7 +167,11 @@ func TestLogin(t *testing.T) {
 		assert.True(t, refreshCookie.HttpOnly)
 		assert.True(t, refreshCookie.Secure)
 		assert.Equal(t, http.SameSiteStrictMode, refreshCookie.SameSite)
-		assert.Equal(t, "/api/auth", refreshCookie.Path)
+		// Path must be "/", not "/api/auth": the Next.js proxy decides session
+		// presence on page navigations (issue #12). With a narrower path the
+		// browser never sends the cookie, so every reload expelled a logged-in user.
+		assert.Equal(t, "/", refreshCookie.Path,
+			"refresh cookie must be visible to page navigations, not only /api/auth")
 		assert.Equal(t, "refresh-plain", refreshCookie.Value)
 	})
 
@@ -310,6 +314,45 @@ func TestLogout(t *testing.T) {
 		}
 		require.NotNil(t, clearCookie, "must clear refresh_token cookie")
 		assert.True(t, clearCookie.MaxAge <= 0, "cookie MaxAge should be <= 0 to clear")
+		// A deletion only removes a cookie whose Path matches the one it was set
+		// with. If setRefreshCookie moves to "/" and this stays "/api/auth",
+		// the browser keeps the old cookie alive and the proxy still sees a
+		// session after logout (issue #12, AC-D).
+		assert.Equal(t, "/", clearCookie.Path,
+			"clear cookie path must match the path it was set with")
+	})
+
+	t.Run("unknown or already-rotated token still clears the cookie", func(t *testing.T) {
+		// AC-F (issue #12): logout must be idempotent. Bailing out with 401 and no
+		// Set-Cookie left the browser holding a refresh_token that the Next.js
+		// proxy still reads as "has session", so a user who logged out over an
+		// already-rotated token stayed logged in to the middleware.
+		svc := &mockAuthService{
+			logoutFn: func(_ context.Context, _ string) error {
+				return model.ErrTokenNotFound
+			},
+		}
+		h := NewAuthHandler(svc)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/auth/logout", nil)
+		req.AddCookie(&http.Cookie{Name: "refresh_token", Value: "rotated-token"})
+		rec := httptest.NewRecorder()
+
+		h.Logout(rec, req)
+
+		assert.Equal(t, http.StatusNoContent, rec.Code,
+			"logout must succeed even when the token is no longer in the DB")
+
+		cookies := rec.Result().Cookies()
+		var clearCookie *http.Cookie
+		for _, c := range cookies {
+			if c.Name == "refresh_token" {
+				clearCookie = c
+			}
+		}
+		require.NotNil(t, clearCookie, "must clear refresh_token even for an unknown token")
+		assert.Equal(t, "/", clearCookie.Path)
+		assert.True(t, clearCookie.MaxAge <= 0)
 	})
 
 	t.Run("missing cookie returns 401", func(t *testing.T) {
